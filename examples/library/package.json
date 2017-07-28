@@ -1,0 +1,12 @@
+{
+  "name": "lib-demo",
+  "version": "0.1.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "js-baker": "./node_modules/.bin/js-baker"
+  },
+  "devDependencies": {
+    "js-baker": "file:../../"
+  }
+}

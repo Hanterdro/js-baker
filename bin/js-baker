@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const args = require('args'),
+    execSync = require('child_process').execSync,
+    serve = require('serve'),
+    fs = require('fs'),
+    findFreePort = require('find-free-port');
+
+args
+    .command('dev', 'development build', buildDev)
+    .command('prod', 'production build', buildProd)
+    .command('watch-dev', 'watcher for development build', watch)
+    .command('unit', 'unit tests', testUnit)
+    .command('e2e', 'e2e tests', testE2E);
+
+args.parse(process.argv, {
+    name: 'js-baker'
+});
+
+
+const COMMAND_LIST = ['dev', 'prod', 'watch-dev', 'unit', 'e2e'];
+
+if (!~COMMAND_LIST.indexOf(args.sub[0])) {
+    args.showHelp();
+}
+
+function watch() {
+    execSync(`
+        git rm -rfq --ignore-unmatch dist  || echo "";
+        rm -rf dist;
+        webpack --debug --devtool source-map --output-pathinfo --progress --devtool source-map --watch ;        
+    `, {stdio: [0, 1, 2]});
+}
+
+function buildDev() {
+
+    execSync(`
+        cd ${process.cwd()}
+        git rm -rfq --ignore-unmatch dist  || echo "";
+        rm -rf dist;
+        ./node_modules/.bin/webpack --debug --output-pathinfo --progress --devtool source-map
+    `, {stdio: [0, 1, 2]});
+}
+
+function buildProd() {
+    execSync(`
+        git rm -rf --ignore-unmatch dist || echo "";
+        rm -rf dist;
+        ./node_modules/.bin/webpack -p --progress
+        git add dist || echo "";
+    `, {stdio: [0, 1, 2]});
+}
+
+function testE2E() {
+    let server,
+        e2e_port_min = 4444,
+        e2e_port_max = 8888;
+
+    findFreePort(e2e_port_min, e2e_port_max, function (err, freePort) {
+        if (err) {
+            throw `Cloud not start server for E2E tests.\nNo free ports between ${e2e_port_min} and ${e2e_port_max}`;
+        }
+        try {
+            server = serve(process.cwd(), {
+                port: freePort,
+                clipless: true
+            });
+
+            execSync(`
+            export E2E_PORT=${freePort};
+            npm run js-baker prod;
+            node_modules/jest/bin/jest.js --bail --forceExit test/e2e/*.js;
+        `, {stdio: [0, 1, 2]});
+
+        } finally {
+            server.stop();
+        }
+    });
+}
+
+function testUnit() {
+    execSync(`
+        ./node_modules/.bin/jest --bail test/unit/*.js;
+    `, {stdio: [0, 1, 2]});
+}
