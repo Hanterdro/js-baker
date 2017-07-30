@@ -1,21 +1,23 @@
 'use strict';
 
-const jsBaker = require('js-baker');
+const jsBaker = require('js-baker'),
+    jsBakerConfig = require('./baker.config');
 
 const i18n = {
-    de: {
-        greeting: 'Hallo Welt'
+        de: {
+            greeting: 'Hallo Welt'
+        },
+        en: {
+            greeting: 'hello world'
+        }
     },
-    en: {
-        greeting: 'hello world'
-    }
-};
+    dirName = require('path').resolve(__dirname);
 
 let config = {
     entry: {
         app: './src/js/main.js'
     },
-    dest: `${require('path').resolve(__dirname)}/htdocs/[lang]`,
+    dest: `${dirName}/${jsBakerConfig.buildDir}/[lang]`,
     publicPath: './',
     pages: [{
         templatePath: './src/html/layout.html',

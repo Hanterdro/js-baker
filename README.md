@@ -6,7 +6,21 @@ js-baker is a tool/concept for building apps and libs with webpack, unit tests w
 
 js-baker provide webpack configurations for building apps and libraries with some hooks for individual configurations.
 
-This becomes useful if you have a lot of webpack project. The configurations are designed in a way which should work for the most use cases.
+This is useful if you have a to manage several webpack projects. The webpack configurations are designed in a way which should work for the most use cases.
+
+## Features
+
+* Out of the Webpack setup
+    * SCSS/SASS support (builds always separate CSS files)
+    * Babel
+    * ES6 imports and promises
+    * File loaders for images (png, jpg ,gif, svg) and fonts (woff, woff2, eot, ttf)
+    * App mode only:
+        * i18n support
+        * Builds HTML pages (in App mode)
+* Jest Unit Tests
+* Nightmare.js for e2e tests
+* CLI
 
 ## Install
 
@@ -24,11 +38,39 @@ The advantage to install js-baker local is that each js-baker project can use a 
 
 ## CLI
 
-* *js-baker dev* clean the dist directory and run webpack in dev mode with source files
-* *js-baker prod* clean the dist directory, run webpack in prod mode and adds dist directory to git (no commit)
-* *js-baker watch-dev* clean the dist directory, run webpack in dev mode with source files and activate the watcher
-* *js-baker unit*  Starts jest with `jest --bail test/unit/*.js`
-* *js-baker e2e* Does a prod build, starts a webserver with the project root as htdocs and starts jest with `jest.js --bail --forceExit test/e2e/*.js` 
+Command | Description
+--- | ---
+js-baker dev | Clean the dist directory and run webpack
+js-baker watch | Clean the dist directory and run webpack
+js-baker prod | Clean the dist directory, run webpack and add the build directory to git (no commit)
+js-baker unit | Unit tests with jest
+js-baker e2e | Runs a prod build, starts a webserver and runs the e2e tests with jest
+
+## baker.conf.js
+
+The optional `baker.conf.js` is expected to be in the root directory of the project (on the same level as the package.json).
+
+
+### Example
+
+    'use strict';
+
+    module.exports = {
+        buildDir: 'htdocs/'
+    };
+
+
+### Options
+
+Command | Default  | Description
+--- | --- | --- |
+buildDir | dist/ | Webpack build dir.<br/>This option is used by the cli for the git add/remove.
+webpackWatchCmd | webpack --debug --devtool source-map --output-pathinfo --progress --devtool source-map --watch |
+webpackBuildDevCmd |webpack --debug --output-pathinfo --progress --devtool source-map |
+webpackBuildProdCmd | webpack -p --progress |
+jestE2eCmd |jest.js --bail --forceExit test/e2e/*.js |
+jestUnitCmd |jest --bail test/unit/*.js|
+
 
 
 ## Using js-baker for building libraries
@@ -46,7 +88,11 @@ The advantage to install js-baker local is that each js-baker project can use a 
     };
         
     module.exports = jsBaker.lib(config);
-    
+
+## Build dir
+
+Libraries are always built to `dist/`.
+
 ### Config options
 
 #### entry
@@ -104,6 +150,11 @@ CSS/SCSS Files which are imported in the entry files are built as a concated css
 
 js-baker built for each language an own directory with own JavaScript, CSS and HTML files.
 
+## Build dir
+
+Unlike libraries the build dir of applications is configurable.
+
+If the js-baker cli is used the buildDir Option in `baker.conf.js` has to be adjusted if an other dir than `dist/` is used (e.g. `htdocs/`).
 ### webpack.config.js
 
     'use strict';
@@ -198,7 +249,3 @@ js-baker requires that unit tests are in the directory `test/unit` and e2e tests
 When e2e are started with the js-baker cli a webserver is automatically started (first free port between 4444 and 8888). The  port can be accessed in the e2e specs with `process.env.E2E_PORT`.
 
 For more implementation details take a look the *library* example (`examples/library/test`).
-    
-## Known issues
-
-* The CLI assumes that the build directory is always `dist/`. Workaround: use own npm scripts for applications.

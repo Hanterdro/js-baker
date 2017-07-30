@@ -8,6 +8,18 @@ const args = require('args'),
     fs = require('fs'),
     findFreePort = require('find-free-port');
 
+const DEFAULT_CONFIG = {
+    buildDir: 'dist/',
+    webpackWatchCmd: 'webpack --debug --devtool source-map --output-pathinfo --progress --devtool source-map --watch',
+    webpackBuildDevCmd: 'webpack --debug --output-pathinfo --progress --devtool source-map',
+    webpackBuildProdCmd: 'webpack -p --progress',
+    jestE2eCmd: 'jest.js --bail --forceExit test/e2e/*.js',
+    jestUnitCmd: 'jest --bail test/unit/*.js',
+
+};
+
+const CONFIG = _getConfig(DEFAULT_CONFIG);
+
 args
     .command('dev', 'development build', buildDev)
     .command('prod', 'production build', buildProd)
@@ -19,7 +31,6 @@ args.parse(process.argv, {
     name: 'js-baker'
 });
 
-
 const COMMAND_LIST = ['dev', 'prod', 'watch-dev', 'unit', 'e2e'];
 
 if (!~COMMAND_LIST.indexOf(args.sub[0])) {
@@ -28,9 +39,9 @@ if (!~COMMAND_LIST.indexOf(args.sub[0])) {
 
 function watch() {
     execSync(`
-        git rm -rfq --ignore-unmatch dist  || echo "";
-        rm -rf dist;
-        webpack --debug --devtool source-map --output-pathinfo --progress --devtool source-map --watch ;        
+        git rm -rfq --ignore-unmatch ${CONFIG.buildDir}  || echo "";
+        rm -rf ${CONFIG.buildDir};
+       ./node_modules/.bin/${CONFIG.webpackWatchCmd};        
     `, {stdio: [0, 1, 2]});
 }
 
@@ -38,18 +49,18 @@ function buildDev() {
 
     execSync(`
         cd ${process.cwd()}
-        git rm -rfq --ignore-unmatch dist  || echo "";
-        rm -rf dist;
-        ./node_modules/.bin/webpack --debug --output-pathinfo --progress --devtool source-map
+        git rm -rfq --ignore-unmatch ${CONFIG.buildDir}  || echo "";
+        rm -rf ${CONFIG.buildDir};
+        ./node_modules/.bin/${CONFIG.webpackBuildDevCmd};
     `, {stdio: [0, 1, 2]});
 }
 
 function buildProd() {
     execSync(`
-        git rm -rf --ignore-unmatch dist || echo "";
-        rm -rf dist;
-        ./node_modules/.bin/webpack -p --progress
-        git add dist || echo "";
+        git rm -rf --ignore-unmatch ${CONFIG.buildDir} || echo "";
+        rm -rf ${CONFIG.buildDir};
+        ./node_modules/.bin/${CONFIG.webpackBuildProdCmd}
+        git add ${CONFIG.buildDir} || echo "";
     `, {stdio: [0, 1, 2]});
 }
 
@@ -71,7 +82,7 @@ function testE2E() {
             execSync(`
             export E2E_PORT=${freePort};
             npm run js-baker prod;
-            node_modules/jest/bin/jest.js --bail --forceExit test/e2e/*.js;
+            node_modules/jest/bin/${CONFIG.jestE2eCmd};
         `, {stdio: [0, 1, 2]});
 
         } finally {
@@ -82,6 +93,17 @@ function testE2E() {
 
 function testUnit() {
     execSync(`
-        ./node_modules/.bin/jest --bail test/unit/*.js;
+        ./node_modules/.bin/${CONFIG.jestUnitCmd};
     `, {stdio: [0, 1, 2]});
+}
+
+
+function _getConfig(defaultConfig) {
+    let userConfig;
+    try {
+        userConfig = require(`${process.cwd()}/baker.config.js`);
+    } catch (e) {
+        userConfig = {};
+    }
+    return Object.assign({}, defaultConfig, userConfig);
 }
