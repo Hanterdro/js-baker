@@ -95,8 +95,9 @@ Libraries are always built to `dist/`.
 
 #### entry
 
-Is the webpack [entry](https://webpack.js.org/configuration/entry-context/#entry) option.
-It's recommend to use it always as an object, because the key will be used as the file name and library name.
+Webpack [entry](https://webpack.js.org/configuration/entry-context/#entry) option.
+
+It's recommend to use it always as an object, because the key will be used as the file and library name.
 The files will built as [UMD](https://github.com/umdjs/umd).
 
     let config = {
@@ -106,8 +107,8 @@ The files will built as [UMD](https://github.com/umdjs/umd).
         }
     };
     
-This example configuration will create the files `dist/foo.js` and `dist/bar.js`. 
-The exports from `./src/js/main.js` are accessible under `window.foo`.
+The example configuration above will create the files `dist/foo.js` and `dist/bar.js`.
+Exports from `./src/js/main.js` are accessible under `window.foo`.
 
 Hint: Use in package.json the build for [main](https://docs.npmjs.com/files/package.json#main) and the source for [module](https://github.com/nodejs/node-eps/blob/4217dca299d89c8c18ac44c878b5fe9581974ef3/002-es6-modules.md#51-determining-if-source-is-an-es-module):
 
