@@ -1,12 +1,12 @@
 # js-baker
 
-js-baker is a tool/concept for building apps and libs with webpack, unit tests with jest and e2e tests with nightmare.js.
+js-baker is a tool for building apps and libs with [webpack](https://webpack.js.org), unit tests with [jest](https://facebook.github.io/jest/) and e2e tests with [nightmare.js](http://www.nightmarejs.org).
    
 ## Introduction
 
-js-baker provide webpack configurations for building apps and libraries with some hooks for individual configurations.
+js-baker provides webpack configurations for building apps and libraries with some hooks for individual configurations.
 
-This is useful if you have a to manage several webpack projects. The webpack configurations are designed in a way which should work for the most use cases.
+This is useful if several webpack projects are managed. The js-baker webpack configurations are designed in a way which should work for the most use cases.
 
 ## Features
 
@@ -26,15 +26,13 @@ This is useful if you have a to manage several webpack projects. The webpack con
 
     npm install --save-dev js-baker
     
-If js-baker is not global installed, add this script to the package.json file:
+Add this script to the package.json file:
 
     "scripts": {
       "js-baker": "./node_modules/.bin/js-baker"
     }
     
 and run it with `npm run js-baker`.
-
-The advantage to install js-baker local is that each js-baker project can use a different js-baker version.
 
 ## CLI
 
@@ -48,7 +46,7 @@ js-baker e2e | Runs a prod build, starts a webserver and runs the e2e tests with
 
 ## baker.conf.js
 
-The optional `baker.conf.js` is expected to be in the root directory of the project (on the same level as the package.json).
+The optional `baker.conf.js` is expected to be in the root directory of the project (on the same level as package.json).
 
 
 ### Example
@@ -64,16 +62,16 @@ The optional `baker.conf.js` is expected to be in the root directory of the proj
 
 Command | Default  | Description
 --- | --- | --- |
-buildDir | dist/ | Webpack build dir.<br/>This option is used by the cli for the git add/remove.
+buildDir | dist/ | Webpack build dir.<br/>This option is used by the cli for `git add/remove`.
 webpackWatchCmd | webpack --debug --devtool source-map --output-pathinfo --progress --devtool source-map --watch |
-webpackBuildDevCmd |webpack --debug --output-pathinfo --progress --devtool source-map |
+webpackBuildDevCmd |webpack --debug --output-pathinfo --progress --devtool source-map
 webpackBuildProdCmd | webpack -p --progress |
 jestE2eCmd |jest.js --bail --forceExit test/e2e/*.js |
 jestUnitCmd |jest --bail test/unit/*.js|
 
 
 
-## Using js-baker for building libraries
+## js-baker for libraries
 
 ### webpack.config.js
 
@@ -111,10 +109,10 @@ The files will built as [UMD](https://github.com/umdjs/umd).
 This example configuration will create the files `dist/foo.js` and `dist/bar.js`. 
 The exports from `./src/js/main.js` are accessible under `window.foo`.
 
-Hint: Use in package.json file the build file for [main](https://docs.npmjs.com/files/package.json#main) and the source file for [module](https://github.com/nodejs/node-eps/blob/4217dca299d89c8c18ac44c878b5fe9581974ef3/002-es6-modules.md#51-determining-if-source-is-an-es-module).
+Hint: Use in package.json the build for [main](https://docs.npmjs.com/files/package.json#main) and the source for [module](https://github.com/nodejs/node-eps/blob/4217dca299d89c8c18ac44c878b5fe9581974ef3/002-es6-modules.md#51-determining-if-source-is-an-es-module):
 
     "main": "dist/foo.js",
-    "module": "./src/js/main.js"
+    "module": "src/js/main.js"
     
 
 #### filename
@@ -146,7 +144,7 @@ CSS/SCSS Files which are imported in the entry files are built as a concated css
         filename: '[name].css'
     };
     
-## Using js-baker for building apps
+## js-baker for apps
 
 js-baker built for each language an own directory with own JavaScript, CSS and HTML files.
 
@@ -230,7 +228,7 @@ Output file in the `dest` directory.
 
 #### chunks
 
-The list of chunks (object keys from the entries) which should be used for the page.
+List of chunks (keys of  `entry`) for the page.
 
 js-baker takes care that the order of the list of the chunks is strictly adhered in the html output file.
 
@@ -244,8 +242,8 @@ jest requires for es6 imports a .babelrc file:
       "presets": ["es2015"]
     }
     
-js-baker requires that unit tests are in the directory `test/unit` and e2e tests under `test/e2e`.
+js-baker default configuration expects unit tests in the directory `test/unit` and e2e tests in `test/e2e`.
 
-When e2e are started with the js-baker cli a webserver is automatically started (first free port between 4444 and 8888). The  port can be accessed in the e2e specs with `process.env.E2E_PORT`.
+The js-baker cli for e2e tests starts a webserver with the first free port between 4444 and 8888. The  port can be accessed in the e2e specs with `process.env.E2E_PORT`.
 
 For more implementation details take a look the *library* example (`examples/library/test`).
