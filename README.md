@@ -40,7 +40,7 @@ and run it with `npm run js-baker`.
 Command | Description
 --- | ---
 js-baker dev | Clean the dist directory and run webpack
-js-baker watch | Clean the dist directory and run webpack
+js-baker watch-dev | Clean the dist directory and run webpack
 js-baker prod | Clean the dist directory, run webpack and add the build directory to git (no commit)
 js-baker unit | Unit tests with jest
 js-baker e2e | Runs a prod build, starts a webserver and runs the e2e tests with jest
