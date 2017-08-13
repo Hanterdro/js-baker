@@ -13,6 +13,7 @@ This is useful if several webpack projects are managed. The js-baker webpack con
 * Out of the Webpack setup
     * SCSS/SASS support (builds always separate CSS files)
     * Babel
+    * JSX support for react
     * ES6 imports and promises
     * File loaders for images (png, jpg ,gif, svg) and fonts (woff, woff2, eot, ttf)
     * App mode only:
